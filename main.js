@@ -1,5 +1,6 @@
 import "./style.css"
 import "./workspace.css"
+import "./layout.css"
 
 async function fetchTitles(limit, start = 0) {
     const uri = `https://jsonplaceholder.typicode.com/posts?_start=${start}&_limit=${limit}`
