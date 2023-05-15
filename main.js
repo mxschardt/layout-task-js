@@ -1,35 +1,34 @@
-async function fetchTitles(limit, start = 0) {
-    const uri = `https://jsonplaceholder.typicode.com/posts?_start=${start}&_limit=${limit}`
-    const response = await fetch(uri)
-    const posts = await response.json()
-    const titles = posts.map((x) => x.title)
-    return titles
-}
+// Размеры элементов импортируются из связанных с ними CSS файлов.
+// Если размеры не найдены в файлах, плашки не запрашиваются.
 
-function createCard(title) {
-    const text = document.createElement("span")
-    text.innerText = title
+// Размеры рабочей области
+const workspace = document.querySelector("#workspace")
+const workspaceStyles = getComputedStyle(workspace)
+// Размеры плашки
+const cardWidth = parseFloat(workspaceStyles.getPropertyValue("--card-width"))
+const cardHeight = parseFloat(workspaceStyles.getPropertyValue("--card-height"))
+// Размер промежутков между плашками
+const gap = parseFloat(workspaceStyles.getPropertyValue("--gap"))
 
-    const card = document.createElement("div")
-    card.classList.add("card")
-    card.appendChild(text)
-
-    return card
-}
-
-function calculateElementCount(
-    containerWidth,
-    containerHeight,
-    elementWidth,
-    elementHeight,
+// Количество плашек, которые помещаются на рабочее пространство
+let cardCount = calculateElementCount(
+    workspace.offsetWidth,
+    workspace.offsetHeight,
+    cardWidth,
+    cardHeight,
     gap
-) {
-    const columns = Math.floor(containerWidth / (elementWidth + gap))
-    const rows = Math.round(containerHeight / (elementHeight + gap))
-    return columns * rows
+)
+
+// Не создаем плашки, если они не помещаются
+if (cardCount) {
+    // Получаем заголовки
+    const titles = await fetchTitles(cardCount)
+    // Для каждого заголовка создаем новую плашку
+    titles.forEach((title) => workspace.appendChild(createCard(title)))
 }
 
-async function onPageResize() {
+// Запрашивает новые заголовки, если на страницу помещается больше элементов, чем раньше
+addEventListener("resize", async () => {
     const newCardCount = calculateElementCount(
         workspace.offsetWidth,
         workspace.offsetHeight,
@@ -42,23 +41,43 @@ async function onPageResize() {
         newTitles.forEach((title) => workspace.appendChild(createCard(title)))
         cardCount = newCardCount
     }
+})
+
+// Запрашивает посты и возвращает их заголовки
+async function fetchTitles(limit, start = 0) {
+    const uri = `https://jsonplaceholder.typicode.com/posts?_start=${start}&_limit=${limit}`
+    const response = await fetch(uri)
+    const posts = await response.json()
+    const titles = posts.map((x) => x.title)
+    return titles
 }
 
-const workspace = document.querySelector("#workspace")
-const workspaceStyles = getComputedStyle(workspace)
-const cardWidth = parseFloat(workspaceStyles.getPropertyValue("--card-width"))
-const cardHeight = parseFloat(workspaceStyles.getPropertyValue("--card-height"))
-const gap = parseFloat(workspaceStyles.getPropertyValue("--gap"))
+// Создает плашку со вложенным текстом
+function createCard(title) {
+    const text = document.createElement("span")
+    text.innerText = title
 
-let cardCount = calculateElementCount(
-    workspace.offsetWidth,
-    workspace.offsetHeight,
-    cardWidth,
-    cardHeight,
+    const card = document.createElement("div")
+    card.classList.add("card")
+    card.appendChild(text)
+
+    return card
+}
+
+// Считает количество элементов, которые поместятся в контейнер
+// Если какой-то из аргументов не является числом, возвращается null.
+function calculateElementCount(
+    containerWidth,
+    containerHeight,
+    elementWidth,
+    elementHeight,
     gap
-)
+) {
+    if (Array.from(arguments).some((arg) => typeof arg != "number")) {
+        return null
+    }
 
-const titles = await fetchTitles(cardCount)
-titles.forEach((title) => workspace.appendChild(createCard(title)))
-
-addEventListener("resize", () => onPageResize())
+    const columns = Math.floor(containerWidth / (elementWidth + gap))
+    const rows = Math.round(containerHeight / (elementHeight + gap))
+    return columns * rows
+}
