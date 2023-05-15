@@ -19,15 +19,13 @@ let cardCount = calculateElementCount(
     gap
 )
 
-// Не создаем плашки, если они не помещаются
+// Не создаем начальные плашки, если они не помещаются
 if (cardCount) {
-    // Получаем заголовки
-    const titles = await fetchTitles(cardCount)
-    // Для каждого заголовка создаем новую плашку
-    titles.forEach((title) => workspace.appendChild(createCard(title)))
+    createCards(cardCount)
 }
 
-// Запрашивает новые заголовки, если на страницу помещается больше элементов, чем раньше
+// При изменении размера окна, запрашивает новые заголовки, 
+// если на страницу помещается больше элементов, чем раньше
 addEventListener("resize", async () => {
     const newCardCount = calculateElementCount(
         workspace.offsetWidth,
@@ -37,11 +35,18 @@ addEventListener("resize", async () => {
         gap
     )
     if (newCardCount > cardCount) {
-        const newTitles = await fetchTitles(newCardCount - cardCount, cardCount)
-        newTitles.forEach((title) => workspace.appendChild(createCard(title)))
+        createCards(newCardCount - cardCount, cardCount)
         cardCount = newCardCount
     }
 })
+
+// Создание плашек и добавление их в DOM
+async function createCards(cardCount, start = 0) {
+    // Получаем заголовки
+    const titles = await fetchTitles(cardCount, start)
+    // Для каждого заголовка создаем новую плашку
+    titles.forEach((title) => workspace.appendChild(createCard(title)))
+}
 
 // Запрашивает посты и возвращает их заголовки
 async function fetchTitles(limit, start = 0) {
