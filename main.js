@@ -1,7 +1,3 @@
-import "./style.css"
-import "./workspace.css"
-import "./layout.css"
-
 async function fetchTitles(limit, start = 0) {
     const uri = `https://jsonplaceholder.typicode.com/posts?_start=${start}&_limit=${limit}`
     const response = await fetch(uri)
@@ -33,6 +29,21 @@ function calculateElementCount(
     return columns * rows
 }
 
+async function onPageResize() {
+    const newCardCount = calculateElementCount(
+        workspace.offsetWidth,
+        workspace.offsetHeight,
+        cardWidth,
+        cardHeight,
+        gap
+    )
+    if (newCardCount > cardCount) {
+        const newTitles = await fetchTitles(newCardCount - cardCount, cardCount)
+        newTitles.forEach((title) => workspace.appendChild(createCard(title)))
+        cardCount = newCardCount
+    }
+}
+
 const workspace = document.querySelector("#workspace")
 const workspaceStyles = getComputedStyle(workspace)
 const cardWidth = parseFloat(workspaceStyles.getPropertyValue("--card-width"))
@@ -50,17 +61,4 @@ let cardCount = calculateElementCount(
 const titles = await fetchTitles(cardCount)
 titles.forEach((title) => workspace.appendChild(createCard(title)))
 
-addEventListener("resize", async () => {
-    const newCardCount = calculateElementCount(
-        workspace.offsetWidth,
-        workspace.offsetHeight,
-        cardWidth,
-        cardHeight,
-        gap
-    )
-    if (newCardCount > cardCount) {
-        const newTitles = await fetchTitles(newCardCount - cardCount, cardCount)
-        newTitles.forEach((title) => workspace.appendChild(createCard(title)))
-        cardCount = newCardCount
-    }
-})
+addEventListener("resize", () => onPageResize())
