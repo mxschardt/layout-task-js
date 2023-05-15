@@ -29,9 +29,9 @@ body {
     grid-template-rows: 50px 1fr 100px;
     grid-template-columns: 250px 1fr 200px;
     grid-template-areas:
-        "header     header  header"
-        "side-left  main    side-right"
-        "footer     footer  footer";
+        "header     header     header"
+        "side-left  workspace  side-right"
+        "footer     footer     footer";
     gap: 2px;
 }
 
