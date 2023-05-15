@@ -28,7 +28,7 @@ function calculateElementCount(
     gap
 ) {
     const columns = Math.floor(containerWidth / (elementWidth + gap))
-    const rows = Math.floor(containerHeight / (elementHeight + gap))
+    const rows = Math.round(containerHeight / (elementHeight + gap))
     return columns * rows
 }
 
@@ -36,13 +36,13 @@ const workspace = document.querySelector("#workspace")
 const workspaceStyles = getComputedStyle(workspace)
 const cardWidth = parseFloat(workspaceStyles.getPropertyValue("--card-width"))
 const cardHeight = parseFloat(workspaceStyles.getPropertyValue("--card-height"))
-const gap = parseFloat(workspaceStyles.getPropertyValue("--gap")) / 2
+const gap = parseFloat(workspaceStyles.getPropertyValue("--gap"))
 
 let cardCount = calculateElementCount(
     workspace.offsetWidth,
     workspace.offsetHeight,
-    cardHeight,
     cardWidth,
+    cardHeight,
     gap
 )
 
@@ -53,8 +53,8 @@ addEventListener("resize", async () => {
     const newCardCount = calculateElementCount(
         workspace.offsetWidth,
         workspace.offsetHeight,
-        cardHeight,
         cardWidth,
+        cardHeight,
         gap
     )
     if (newCardCount > cardCount) {
