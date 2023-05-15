@@ -1,14 +1,18 @@
 /* Workspace */
 #workspace {
-    padding: 30px;
+    --card-width: 150px;
+    --card-height: 100px;
+    --gap: 30px;
+
+    margin: 30px;
 
     grid-area: workspace;
 
     display: grid;
 
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    grid-template-rows: repeat(auto-fit, 100px);
-    gap: 30px;
+    grid-template-columns: repeat(auto-fit, minmax(var(--card-width), 1fr));
+    grid-template-rows: repeat(auto-fit, var(--card-height));
+    gap: var(--gap);
 
     justify-items: center;
     align-items: center;
@@ -17,8 +21,8 @@
 }
 
 #workspace .card {
-    width: 150px;
-    height: 100px;
+    width: var(--card-width);
+    height: var(--card-height);
 
     display: flex;
 
