@@ -1,7 +1,7 @@
 /* Workspace */
 #workspace {
     padding: 30px;
-    
+
     grid-area: workspace;
 
     display: grid;
@@ -29,4 +29,12 @@
     background-color: #c0c0c0;
 
     border-radius: 5%;
+}
+
+#workspace .card span {
+    padding: 10px;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
